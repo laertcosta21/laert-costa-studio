@@ -1,0 +1,110 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+
+const NAV_LINKS = [
+  { href: '/#servicos', label: 'SERVIÇOS' },
+  { href: '/#projetos', label: 'PROJETOS' },
+  { href: '/#sobre', label: 'SOBRE' },
+  { href: '/#contato', label: 'CONTATO' },
+]
+
+export default function Header() {
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setMenuOpen(false)
+    }
+    window.addEventListener('resize', handleResize, { passive: true })
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
+  const handleNavClick = () => setMenuOpen(false)
+
+  return (
+    <>
+      <header
+        ref={headerRef}
+        className={`header fixed top-0 left-0 right-0 z-50 h-16 md:h-20 transition-all duration-400 ${
+          scrolled
+            ? 'bg-[var(--color-black)] border-b border-white/10'
+            : 'bg-transparent border-b border-transparent'
+        }`}
+      >
+        <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-12 flex items-center justify-between h-full">
+          {/* Logo */}
+          <Link
+            href="/#hero"
+            className="font-display text-sm lg:text-base text-white tracking-widest hover:opacity-70 transition-opacity"
+            onClick={(e) => {
+              handleNavClick()
+              if (typeof window !== 'undefined' && window.location.pathname === '/') {
+                e.preventDefault()
+                document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })
+              }
+            }}
+          >
+            LAERT COSTA STUDIO
+          </Link>
+
+          {/* Navegação desktop — gap-12 + Inter Tight 500 tracking-widest */}
+          <nav className="hidden lg:flex items-center gap-12" aria-label="Navegação principal">
+            {NAV_LINKS.map(({ href, label }) => (
+              <Link key={href} href={href} className="nav-link">
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Botão hamburger mobile */}
+          <button
+            className="flex lg:hidden flex-col justify-center items-center w-10 h-10 gap-[6px]"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={menuOpen}
+          >
+            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+          </button>
+        </div>
+      </header>
+
+      {/* Menu fullscreen mobile */}
+      <div
+        className={`fixed inset-0 z-40 bg-[var(--color-black)] flex flex-col justify-center items-center gap-8 transition-all duration-500 lg:hidden ${
+          menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        aria-hidden={!menuOpen}
+      >
+        <nav className="flex flex-col items-center gap-6" aria-label="Menu mobile">
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="font-display text-5xl text-white tracking-widest hover:opacity-60 transition-opacity"
+              onClick={handleNavClick}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </>
+  )
+}

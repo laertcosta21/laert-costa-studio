@@ -1,0 +1,153 @@
+import Link from 'next/link'
+
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5567993248550'
+
+const NAV_LINKS = [
+  { href: '/#servicos', label: 'Serviços' },
+  { href: '/#projetos', label: 'Projetos' },
+  { href: '/#diferenciais', label: 'Diferenciais' },
+  { href: '/#sobre', label: 'Sobre' },
+  { href: '/#contato', label: 'Contato' },
+]
+
+const SOCIAL_LINKS = [
+  { href: 'https://www.instagram.com/', label: 'Instagram' },
+  { href: 'https://www.linkedin.com/', label: 'LinkedIn' },
+  { href: `https://wa.me/${WA_NUMBER}`, label: 'WhatsApp' },
+]
+
+export default function Footer() {
+  return (
+    <footer
+      className="relative z-0"
+      style={{ background: '#F5F5F4', borderTop: '1px solid rgba(0,0,0,0.08)' }}
+    >
+      <div
+        className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
+        style={{ paddingTop: '64px', paddingBottom: '48px' }}
+      >
+
+        {/* Grid principal */}
+        <div className="grid grid-cols-12 gap-6 mb-16">
+
+          {/* Coluna 1 — contatos */}
+          <div className="col-span-12 md:col-span-3">
+            <a
+              href="mailto:laert.14@gmail.com"
+              className="font-body text-black font-medium group"
+              style={{
+                fontSize: '16px',
+                textDecoration: 'none',
+                borderBottom: '1px solid rgba(0,0,0,0.15)',
+                paddingBottom: '6px',
+                display: 'inline-flex',
+                alignItems: 'flex-start',
+                gap: '8px',
+              }}
+            >
+              <span style={{ color: 'rgba(0,0,0,0.3)' }}>+</span>
+              laert.14@gmail.com
+            </a>
+            <a
+              href={`https://wa.me/${WA_NUMBER}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-black font-medium group"
+              style={{
+                fontSize: '16px',
+                textDecoration: 'none',
+                borderBottom: '1px solid rgba(0,0,0,0.15)',
+                paddingBottom: '6px',
+                display: 'inline-flex',
+                alignItems: 'flex-start',
+                gap: '8px',
+                marginTop: '12px',
+              }}
+            >
+              <span style={{ color: 'rgba(0,0,0,0.3)' }}>+</span>
+              +55 (67) 99324-8550
+            </a>
+          </div>
+
+          {/* Espaço central */}
+          <div className="hidden md:block md:col-span-3" />
+
+          {/* Coluna 2 — navegação */}
+          <div className="col-span-6 md:col-span-3">
+            <span
+              className="font-body text-black/40 tracking-widest block mb-4"
+              style={{ fontSize: '12px' }}
+            >
+              Navegação
+            </span>
+            <nav aria-label="Navegação do rodapé">
+              <ul role="list" style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+                {NAV_LINKS.map(({ href, label }) => (
+                  <li key={href} style={{ marginBottom: '8px' }}>
+                    <Link
+                      href={href}
+                      className="font-body text-black hover:text-black/50 transition-colors"
+                      style={{ fontSize: '16px', textDecoration: 'none' }}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Coluna 3 — social */}
+          <div className="col-span-6 md:col-span-2 md:col-start-11">
+            <span
+              className="font-body text-black/40 tracking-widest block mb-4"
+              style={{ fontSize: '12px' }}
+            >
+              Social
+            </span>
+            {SOCIAL_LINKS.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-black hover:text-black/50 transition-colors"
+                style={{
+                  fontSize: '16px',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  marginBottom: '8px',
+                }}
+              >
+                {label}
+                <span style={{ fontSize: '12px' }}>&#8599;</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* Linha inferior */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          style={{ paddingTop: '24px', borderTop: '1px solid rgba(0,0,0,0.1)' }}
+        >
+          <span
+            className="font-display text-black"
+            style={{ fontSize: '18px' }}
+          >
+            LAERT COSTA STUDIO
+          </span>
+          <span
+            className="font-body text-black/40"
+            style={{ fontSize: '12px' }}
+          >
+            &copy; {new Date().getFullYear()} Laert Costa Studio. Todos os direitos reservados.
+          </span>
+        </div>
+
+      </div>
+    </footer>
+  )
+}
