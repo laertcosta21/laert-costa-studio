@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5567993248550'
 
@@ -31,7 +32,7 @@ export default function Footer() {
         <div className="grid grid-cols-12 gap-6 mb-16">
 
           {/* Coluna 1 — contatos */}
-          <div className="col-span-12 md:col-span-3">
+          <AnimatedSection className="col-span-12 md:col-span-3">
             <a
               href="mailto:laert.14@gmail.com"
               className="font-body text-black font-medium group"
@@ -67,15 +68,15 @@ export default function Footer() {
               <span style={{ color: 'rgba(0,0,0,0.3)' }}>+</span>
               +55 (67) 99324-8550
             </a>
-          </div>
+          </AnimatedSection>
 
           {/* Espaço central */}
           <div className="hidden md:block md:col-span-3" />
 
           {/* Coluna 2 — navegação */}
-          <div className="col-span-6 md:col-span-3">
+          <AnimatedSection className="col-span-6 md:col-span-3" delay={60}>
             <span
-              className="font-body text-black/40 tracking-widest block mb-4"
+              className="font-body text-black/55 tracking-widest block mb-4"
               style={{ fontSize: '12px' }}
             >
               Navegação
@@ -95,12 +96,12 @@ export default function Footer() {
                 ))}
               </ul>
             </nav>
-          </div>
+          </AnimatedSection>
 
           {/* Coluna 3 — social */}
-          <div className="col-span-6 md:col-span-2 md:col-start-11">
+          <AnimatedSection className="col-span-6 md:col-span-2 md:col-start-11" delay={120}>
             <span
-              className="font-body text-black/40 tracking-widest block mb-4"
+              className="font-body text-black/55 tracking-widest block mb-4"
               style={{ fontSize: '12px' }}
             >
               Social
@@ -125,27 +126,36 @@ export default function Footer() {
                 <span style={{ fontSize: '12px' }}>&#8599;</span>
               </a>
             ))}
-          </div>
+          </AnimatedSection>
         </div>
 
         {/* Linha inferior */}
-        <div
+        <AnimatedSection
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          delay={180}
           style={{ paddingTop: '24px', borderTop: '1px solid rgba(0,0,0,0.1)' }}
         >
+          <div className="flex flex-col leading-none">
+            <span
+              className="font-display text-black"
+              style={{ fontSize: '18px' }}
+            >
+              LAERT COSTA STUDIO
+            </span>
+            <span
+              className="font-body text-black/55 uppercase mt-1"
+              style={{ fontSize: '10px', letterSpacing: '0.22em' }}
+            >
+              ARQUITETURA INTEGRADA
+            </span>
+          </div>
           <span
-            className="font-display text-black"
-            style={{ fontSize: '18px' }}
-          >
-            LAERT COSTA STUDIO
-          </span>
-          <span
-            className="font-body text-black/40"
+            className="font-body text-black/55"
             style={{ fontSize: '12px' }}
           >
             &copy; {new Date().getFullYear()} Laert Costa Studio. Todos os direitos reservados.
           </span>
-        </div>
+        </AnimatedSection>
 
       </div>
     </footer>

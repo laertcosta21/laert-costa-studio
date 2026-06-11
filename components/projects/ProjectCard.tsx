@@ -20,12 +20,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const cardRef = useRef<HTMLAnchorElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const imageWrapRef = useRef<HTMLDivElement>(null)
   const resettingRef = useRef(false)
 
-  // ─── Animação de entrada com GSAP ScrollTrigger ───────────────
+  // ─── Animação de entrada: cortina (clip-path) + zoom da imagem ─
   useEffect(() => {
     const el = containerRef.current
-    if (!el) return
+    const imageWrap = imageWrapRef.current
+    if (!el || !imageWrap) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let ctx: { revert?: () => void } = {}
@@ -36,22 +38,28 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       gsap.registerPlugin(ScrollTrigger)
 
       ctx = gsap.context(() => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, scale: 0.94, y: 30 },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 0.8,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 90%',
-              toggleActions: 'play none none none',
-            },
-          }
-        )
+        gsap.set(el, { clipPath: 'inset(0% 0% 100% 0%)' })
+        gsap.set(imageWrap, { scale: 1.15 })
+
+        const scrollTrigger = {
+          trigger: el,
+          start: 'top 90%',
+          toggleActions: 'play none none none',
+        }
+
+        gsap.to(el, {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: 1,
+          ease: 'power4.out',
+          scrollTrigger,
+        })
+
+        gsap.to(imageWrap, {
+          scale: 1,
+          duration: 1.2,
+          ease: 'power3.out',
+          scrollTrigger,
+        })
       })
     }
 
@@ -97,53 +105,57 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       <div
         ref={containerRef}
         className="group relative w-full overflow-hidden bg-black/[0.06] aspect-square"
+        style={{ willChange: 'clip-path' }}
       >
-        {/* Imagem de capa */}
-        {project.cover_image_url ? (
-          <Image
-            src={project.cover_image_url}
-            alt={project.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            quality={90}
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            style={{ transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)' }}
-          />
-        ) : (
-          /* Placeholder quando não há imagem */
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span
-              aria-hidden="true"
-              className="font-display leading-none select-none"
-              style={{
-                fontSize: 'clamp(64px, 10vw, 120px)',
-                color: 'rgba(0,0,0,0.06)',
-              }}
-            >
-              {CATEGORY_LABELS[project.category]?.[0] ?? '?'}
-            </span>
-          </div>
-        )}
+        {/* Wrapper da imagem — recebe o zoom de entrada (independente do hover) */}
+        <div ref={imageWrapRef} className="absolute inset-0" style={{ willChange: 'transform' }}>
+          {/* Imagem de capa */}
+          {project.cover_image_url ? (
+            <Image
+              src={project.cover_image_url}
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              quality={90}
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              style={{ transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)' }}
+            />
+          ) : (
+            /* Placeholder quando não há imagem */
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span
+                aria-hidden="true"
+                className="font-display leading-none select-none"
+                style={{
+                  fontSize: 'clamp(64px, 10vw, 120px)',
+                  color: 'rgba(0,0,0,0.06)',
+                }}
+              >
+                {CATEGORY_LABELS[project.category]?.[0] ?? '?'}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Overlay — sempre visível com opacidade reduzida, plena no hover */}
         <div
           className="project-card-overlay absolute inset-x-0 bottom-0 p-4 flex flex-col gap-1"
           style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)',
-            opacity: 0.6,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 60%, transparent 100%)',
+            opacity: 0.78,
             transition: 'opacity 350ms ease',
           }}
         >
           <span
             className="font-body uppercase tracking-widest mb-2"
-            style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}
+            style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
           >
             {CATEGORY_LABELS[project.category] ?? project.category}
             {project.year ? ` · ${project.year}` : ''}
           </span>
           <h3
             className="font-display text-white leading-tight"
-            style={{ fontSize: 'clamp(16px, 2vw, 24px)' }}
+            style={{ fontSize: 'clamp(16px, 2vw, 24px)', textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
           >
             {project.title}
           </h3>

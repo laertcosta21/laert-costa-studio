@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react'
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null)
+  const watermarkRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const el = sectionRef.current
@@ -33,6 +34,24 @@ export default function AboutSection() {
             },
           }
         )
+
+        // Watermark — parallax mais acentuado, cria profundidade atrás do texto
+        if (watermarkRef.current) {
+          gsap.fromTo(
+            watermarkRef.current,
+            { yPercent: 0 },
+            {
+              yPercent: -30,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: el,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true,
+              },
+            }
+          )
+        }
 
         // Animação de entrada dos textos
         const textBlocks = el.querySelectorAll('[data-reveal]')
@@ -65,12 +84,27 @@ export default function AboutSection() {
     <section
       ref={sectionRef}
       id="sobre"
-      className="sticky top-0 z-10 will-change-transform"
+      className="relative sticky top-0 z-10 overflow-hidden will-change-transform"
       style={{ background: '#F5F5F4' }}
     >
+      {/* Watermark — texto gigante de fundo, parallax próprio */}
       <div
-        className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
-        style={{ paddingTop: '96px', paddingBottom: '128px' }}
+        ref={watermarkRef}
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+        style={{ zIndex: 0 }}
+      >
+        <span
+          className="font-display text-black leading-none whitespace-nowrap"
+          style={{ fontSize: 'clamp(120px, 22vw, 380px)', opacity: 0.04 }}
+        >
+          LAERT COSTA
+        </span>
+      </div>
+
+      <div
+        className="relative max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
+        style={{ paddingTop: '96px', paddingBottom: '128px', zIndex: 1 }}
       >
 
         {/* Linha 1 — label + título */}
@@ -79,10 +113,10 @@ export default function AboutSection() {
           {/* Label vertical */}
           <div className="col-span-2 lg:col-span-1 pt-2" data-reveal>
             <span
-              className="font-body text-black/40 tracking-widest block"
-              style={{ fontSize: '12px' }}
+              className="font-body uppercase block"
+              style={{ fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(0,0,0,0.55)' }}
             >
-              + Sobre nós
+              — SOBRE
             </span>
           </div>
 
@@ -115,7 +149,7 @@ export default function AboutSection() {
               Mais de 10 anos dedicados a projetos que precisam funcionar antes de serem bonitos.
             </p>
             <p
-              className="font-body text-black/50 leading-relaxed"
+              className="font-body text-black/60 leading-relaxed"
               style={{ fontSize: 'clamp(16px, 1.4vw, 20px)', fontWeight: 400 }}
             >
               Residências, edifícios comerciais e lançamentos imobiliários entregues com documentação
@@ -129,7 +163,7 @@ export default function AboutSection() {
           {/* Texto de apoio — 4 colunas */}
           <div className="col-span-12 md:col-span-4 mt-8 md:mt-0" data-reveal>
             <p
-              className="font-body text-black/50 leading-relaxed"
+              className="font-body text-black/60 leading-relaxed"
               style={{ fontSize: '14px' }}
             >
               Cada projeto tem atendimento direto. Sem intermediários, sem terceirização.

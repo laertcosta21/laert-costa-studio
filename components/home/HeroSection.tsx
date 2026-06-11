@@ -1,17 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import Image from 'next/image'
-
-// Imagens da pasta public/images — atualizar conforme arquivos disponíveis
-const SLIDES = [
-  '/images/hero-bg.jpeg',
-  '/images/04.jpeg',
-  '/images/05.jpeg',
-  '/images/render-07.jpeg',
-]
-
-const SLIDE_INTERVAL = 5000 // 5 segundos por slide
+import { useEffect, useRef } from 'react'
 
 const HEADLINE_LINES = [
   ['PROJETOS', 'QUE'],
@@ -23,31 +12,11 @@ const SUBHEADLINE =
   'Arquitetura, BIM e visualização 3D para escritórios e incorporadoras que precisam apresentar projetos com o nível de qualidade que os clientes exigem.'
 
 export default function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0)
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([])
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // ─── Slider: avança automaticamente ──────────────────────────
-  const goToSlide = useCallback((index: number) => {
-    setCurrentSlide(index)
-    // Reinicia o intervalo ao clicar em um dot
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    intervalRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % SLIDES.length)
-    }, SLIDE_INTERVAL)
-  }, [])
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % SLIDES.length)
-    }, SLIDE_INTERVAL)
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   // ─── Animação de entrada (word mask + subtitle) ───────────────
   useEffect(() => {
@@ -109,7 +78,7 @@ export default function HeroSection() {
     return () => { cancelled = true }
   }, [])
 
-  // ─── Parallax GSAP na imagem de fundo ─────────────────────────
+  // ─── Parallax de scroll no vídeo de fundo ─────────────────────
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
@@ -120,12 +89,12 @@ export default function HeroSection() {
       const { ScrollTrigger } = await import('gsap/ScrollTrigger')
       gsap.registerPlugin(ScrollTrigger)
 
-      const bgImages = sectionRef.current?.querySelectorAll<HTMLElement>('.hero-bg-image')
-      if (!bgImages?.length) return
+      const video = videoRef.current
+      if (!video) return
 
       ctx = gsap.context(() => {
-        gsap.to(bgImages, {
-          yPercent: 30,
+        gsap.to(video, {
+          yPercent: 15,
           ease: 'none',
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -141,6 +110,52 @@ export default function HeroSection() {
     return () => ctx.revert?.()
   }, [])
 
+  // ─── Interação do vídeo com o cursor (parallax + zoom) ────────
+  useEffect(() => {
+    const section = sectionRef.current
+    const video = videoRef.current
+    if (!section || !video) return
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const target = { x: 0, y: 0 }
+    const current = { x: 0, y: 0 }
+    let raf: number
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect()
+      target.x = (e.clientX - rect.left) / rect.width - 0.5
+      target.y = (e.clientY - rect.top) / rect.height - 0.5
+    }
+
+    const handleMouseLeave = () => {
+      target.x = 0
+      target.y = 0
+    }
+
+    const tick = () => {
+      current.x += (target.x - current.x) * 0.06
+      current.y += (target.y - current.y) * 0.06
+
+      const translateX = current.x * -40
+      const translateY = current.y * -40
+
+      video.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(1.08)`
+
+      raf = requestAnimationFrame(tick)
+    }
+
+    section.addEventListener('mousemove', handleMouseMove)
+    section.addEventListener('mouseleave', handleMouseLeave)
+    raf = requestAnimationFrame(tick)
+
+    return () => {
+      section.removeEventListener('mousemove', handleMouseMove)
+      section.removeEventListener('mouseleave', handleMouseLeave)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   // Índice global de palavras para o array de refs
   let wordIndex = 0
 
@@ -150,32 +165,22 @@ export default function HeroSection() {
       id="hero"
       className="relative flex flex-col justify-between min-h-[100dvh] overflow-hidden bg-black"
     >
-      {/* ─── Slider de imagens ─────────────────────────────────── */}
+      {/* ─── Vídeo de fundo ─────────────────────────────────────── */}
       <div className="absolute inset-0 z-0">
-        {SLIDES.map((src, index) => (
-          <div
-            key={src}
-            className="absolute inset-0 hero-bg-image"
-            style={{
-              opacity: index === currentSlide ? 1 : 0,
-              transition: 'opacity 1200ms cubic-bezier(.16,1,.3,1)',
-              zIndex: index === currentSlide ? 1 : 0,
-            }}
-            aria-hidden={index !== currentSlide}
-          >
-            <Image
-              src={src}
-              alt={`Render arquitetônico ${index + 1}`}
-              fill
-              priority={index === 0}
-              quality={88}
-              className="object-cover object-center"
-              sizes="100vw"
-            />
-          </div>
-        ))}
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          src="/images/video.mp4"
+          poster="/images/01.jpeg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          style={{ willChange: 'transform', transform: 'scale(1.08)' }}
+        />
 
-        {/* Overlay escuro sobre todas as imagens */}
+        {/* Overlay escuro sobre o vídeo */}
         <div
           className="absolute inset-0"
           style={{ background: 'rgba(0,0,0,0.52)', zIndex: 2 }}
@@ -226,7 +231,7 @@ export default function HeroSection() {
         </p>
       </div>
 
-      {/* ─── Rodapé: SCROLL + dots de navegação ──────────────────── */}
+      {/* ─── Rodapé: SCROLL ────────────────────────────────────────── */}
       <div
         ref={scrollRef}
         className="relative z-10 flex items-center justify-between px-6 lg:px-12 py-5 border-t border-white/[0.12]"
@@ -237,32 +242,6 @@ export default function HeroSection() {
           <span className="font-body text-white/40 text-xs tracking-[0.2em] uppercase">
             SCROLL
           </span>
-        </div>
-
-        {/* Dots de navegação */}
-        <div className="flex items-center gap-2" role="tablist" aria-label="Navegação do slider">
-          {SLIDES.map((_, i) => (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === currentSlide}
-              aria-label={`Imagem ${i + 1} de ${SLIDES.length}`}
-              onClick={() => goToSlide(i)}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === currentSlide ? '20px' : '6px',
-                height: '6px',
-                background: i === currentSlide
-                  ? 'rgba(255,255,255,0.85)'
-                  : 'rgba(255,255,255,0.25)',
-                borderRadius: '3px',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                flexShrink: 0,
-              }}
-            />
-          ))}
         </div>
       </div>
     </section>

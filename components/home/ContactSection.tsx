@@ -7,9 +7,12 @@ const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5567993248550'
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const titleRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
   const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [mensagem, setMensagem] = useState('')
+  const [status, setStatus] = useState<'idle' | 'opening' | 'blocked'>('idle')
+  const [waLink, setWaLink] = useState('')
 
   // GSAP ScrollTrigger — parallax sticky + reveal
   useEffect(() => {
@@ -94,11 +97,36 @@ export default function ContactSection() {
     const text = encodeURIComponent(
       `Olá Laert, meu nome é ${nome}.\n\nEmail: ${email}\n\n${mensagem || 'Gostaria de conversar sobre um projeto.'}`
     )
-    window.open(`https://wa.me/${WA_NUMBER}?text=${text}`, '_blank')
+    const link = `https://wa.me/${WA_NUMBER}?text=${text}`
+    const win = window.open(link, '_blank')
+    if (!win) {
+      setWaLink(link)
+      setStatus('blocked')
+    } else {
+      setStatus('opening')
+    }
+  }
+
+  // ─── Botão CTA — efeito magnético no mouse ────────────────────
+  const handleButtonMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const btn = buttonRef.current
+    if (!btn) return
+    const rect = btn.getBoundingClientRect()
+    const x = (e.clientX - rect.left - rect.width / 2) * 0.3
+    const y = (e.clientY - rect.top - rect.height / 2) * 0.3
+    btn.style.transition = 'transform 0.15s ease-out'
+    btn.style.transform = `translate(${x}px, ${y}px)`
+  }
+
+  const handleButtonMouseLeave = () => {
+    const btn = buttonRef.current
+    if (!btn) return
+    btn.style.transition = 'transform 0.4s cubic-bezier(.16,1,.3,1)'
+    btn.style.transform = 'translate(0px, 0px)'
   }
 
   const inputClass =
-    'w-full border-b border-black/20 bg-transparent py-4 font-body text-black placeholder-black/30 focus:outline-none focus:border-black transition-colors mb-6'
+    'w-full bg-transparent py-4 font-body text-black placeholder-black/30 focus:outline-none transition-colors relative z-10'
 
   return (
     <section
@@ -118,8 +146,8 @@ export default function ContactSection() {
           {/* Label */}
           <div className="col-span-12 lg:col-span-1 lg:pt-4">
             <span
-              className="font-body text-black/40 tracking-widest block"
-              style={{ fontSize: '12px' }}
+              className="font-body uppercase block"
+              style={{ fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(0,0,0,0.55)' }}
             >
               — CONTATO
             </span>
@@ -147,7 +175,7 @@ export default function ContactSection() {
           {/* Coluna esquerda — texto + contatos */}
           <div className="col-span-12 lg:col-span-5" data-reveal>
             <p
-              className="font-body text-black/50 leading-relaxed"
+              className="font-body text-black/60 leading-relaxed"
               style={{ fontSize: '18px', maxWidth: '420px' }}
             >
               Quer fazer parte de um projeto com atendimento direto e resultado
@@ -190,35 +218,97 @@ export default function ContactSection() {
           {/* Coluna direita — formulário */}
           <div className="col-span-12 lg:col-span-6 lg:col-start-7 mt-12 lg:mt-0" data-reveal>
             <form onSubmit={handleSubmit} noValidate>
-              <input
-                type="text"
-                placeholder="Nome *"
-                required
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className={inputClass}
-                style={{ fontSize: '16px' }}
-              />
-              <input
-                type="email"
-                placeholder="Email *"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputClass}
-                style={{ fontSize: '16px' }}
-              />
-              <textarea
-                placeholder="Mensagem"
-                rows={4}
-                value={mensagem}
-                onChange={(e) => setMensagem(e.target.value)}
-                className={`${inputClass} resize-none`}
-                style={{ fontSize: '16px' }}
-              />
+              {/* Nome */}
+              <div className="relative mb-6">
+                <label
+                  htmlFor="contact-nome"
+                  className="block font-body uppercase"
+                  style={{ fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(0,0,0,0.55)', marginBottom: '8px' }}
+                >
+                  Nome <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="contact-nome"
+                  name="nome"
+                  type="text"
+                  placeholder="Seu nome completo"
+                  required
+                  aria-required="true"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className={`${inputClass} peer`}
+                  style={{ fontSize: '16px' }}
+                />
+                <span className="absolute left-0 bottom-0 w-full h-px bg-black/20" aria-hidden="true" />
+                <span
+                  className="absolute left-0 bottom-0 w-full h-px bg-black origin-left scale-x-0 peer-focus:scale-x-100 transition-transform duration-300 ease-out"
+                  style={{ transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)' }}
+                  aria-hidden="true"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="relative mb-6">
+                <label
+                  htmlFor="contact-email"
+                  className="block font-body uppercase"
+                  style={{ fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(0,0,0,0.55)', marginBottom: '8px' }}
+                >
+                  Email <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id="contact-email"
+                  name="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  required
+                  aria-required="true"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`${inputClass} peer`}
+                  style={{ fontSize: '16px' }}
+                />
+                <span className="absolute left-0 bottom-0 w-full h-px bg-black/20" aria-hidden="true" />
+                <span
+                  className="absolute left-0 bottom-0 w-full h-px bg-black origin-left scale-x-0 peer-focus:scale-x-100 transition-transform duration-300 ease-out"
+                  style={{ transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)' }}
+                  aria-hidden="true"
+                />
+              </div>
+
+              {/* Mensagem */}
+              <div className="relative mb-6">
+                <label
+                  htmlFor="contact-mensagem"
+                  className="block font-body uppercase"
+                  style={{ fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(0,0,0,0.55)', marginBottom: '8px' }}
+                >
+                  Mensagem
+                </label>
+                <textarea
+                  id="contact-mensagem"
+                  name="mensagem"
+                  placeholder="Conte um pouco sobre o seu projeto"
+                  rows={4}
+                  value={mensagem}
+                  onChange={(e) => setMensagem(e.target.value)}
+                  className={`${inputClass} peer resize-none`}
+                  style={{ fontSize: '16px' }}
+                />
+                <span className="absolute left-0 bottom-0 w-full h-px bg-black/20" aria-hidden="true" />
+                <span
+                  className="absolute left-0 bottom-0 w-full h-px bg-black origin-left scale-x-0 peer-focus:scale-x-100 transition-transform duration-300 ease-out"
+                  style={{ transitionTimingFunction: 'cubic-bezier(.16,1,.3,1)' }}
+                  aria-hidden="true"
+                />
+              </div>
+
               <button
+                ref={buttonRef}
                 type="submit"
-                className="font-body bg-black text-white hover:bg-black/80 transition-colors"
+                onMouseMove={handleButtonMouseMove}
+                onMouseLeave={handleButtonMouseLeave}
+                className="font-body bg-black text-white hover:bg-black/80 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                 style={{
                   marginTop: '16px',
                   fontSize: '13px',
@@ -228,10 +318,27 @@ export default function ContactSection() {
                   border: 'none',
                   cursor: 'pointer',
                   width: '100%',
+                  willChange: 'transform',
                 }}
               >
                 ENVIAR MENSAGEM →
               </button>
+
+              <p
+                aria-live="polite"
+                className="font-body"
+                style={{ fontSize: '13px', marginTop: '12px', color: 'rgba(0,0,0,0.6)', minHeight: '1.4em' }}
+              >
+                {status === 'opening' && 'Abrindo o WhatsApp em uma nova aba...'}
+                {status === 'blocked' && (
+                  <>
+                    O navegador bloqueou a abertura automática.{' '}
+                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="underline text-black">
+                      Clique aqui para continuar
+                    </a>.
+                  </>
+                )}
+              </p>
             </form>
           </div>
 

@@ -146,7 +146,7 @@ function AccordionItem({ service, index, isOpen, onToggle }: AccordionItemProps)
             className="font-display uppercase leading-none flex-1 transition-colors duration-200"
             style={{
               fontSize: 'clamp(20px, 2.8vw, 40px)',
-              color: isOpen ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,1)',
+              color: isOpen ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.65)',
             }}
           >
             {service.title}
@@ -242,6 +242,7 @@ function AccordionItem({ service, index, isOpen, onToggle }: AccordionItemProps)
 
 export default function ServicesSection() {
   const [openIndex, setOpenIndex] = useState<number>(0)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   const handleToggle = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? -1 : index))
@@ -284,12 +285,55 @@ export default function ServicesSection() {
     return () => ctx.revert?.()
   }, [])
 
+  // ─── Expansão suave da seção ao entrar no viewport ────────────
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    if (!wrapper) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let ctx: { revert?: () => void } = {}
+
+    const init = async () => {
+      const { gsap } = await import('gsap')
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger')
+      gsap.registerPlugin(ScrollTrigger)
+
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          wrapper,
+          {
+            scale: 0.92,
+            clipPath: 'inset(4% round 32px)',
+          },
+          {
+            scale: 1,
+            clipPath: 'inset(0% round 0px)',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: wrapper,
+              start: 'top bottom',
+              end: 'top 35%',
+              scrub: true,
+            },
+          }
+        )
+      })
+    }
+
+    init()
+    return () => ctx.revert?.()
+  }, [])
+
   return (
     <section
       id="servicos"
-      className="bg-black border-t border-white/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)]"
+      className="bg-black border-t border-white/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)] overflow-hidden"
     >
-      <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-12">
+      <div
+        ref={wrapperRef}
+        className="max-w-[1440px] mx-auto w-full px-6 lg:px-12"
+        style={{ willChange: 'transform, clip-path', transformOrigin: 'center center' }}
+      >
 
         {/* Cabeçalho — grid 2 colunas: título esquerda, descrição direita */}
         <AnimatedSection>

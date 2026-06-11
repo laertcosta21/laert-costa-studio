@@ -31,7 +31,20 @@ export default function Header() {
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
+
+    const main = document.querySelector('main')
+    if (main) {
+      if (menuOpen) {
+        main.setAttribute('inert', '')
+      } else {
+        main.removeAttribute('inert')
+      }
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+      main?.removeAttribute('inert')
+    }
   }, [menuOpen])
 
   const handleNavClick = () => setMenuOpen(false)
@@ -41,7 +54,7 @@ export default function Header() {
       <header
         ref={headerRef}
         className={`header fixed top-0 left-0 right-0 z-50 h-16 md:h-20 transition-all duration-400 ${
-          scrolled
+          scrolled || menuOpen
             ? 'bg-[var(--color-black)] border-b border-white/10'
             : 'bg-transparent border-b border-transparent'
         }`}
@@ -50,7 +63,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/#hero"
-            className="font-display text-sm lg:text-base text-white tracking-widest hover:opacity-70 transition-opacity"
+            className="flex flex-col justify-center leading-none text-white hover:opacity-70 transition-opacity"
             onClick={(e) => {
               handleNavClick()
               if (typeof window !== 'undefined' && window.location.pathname === '/') {
@@ -59,7 +72,15 @@ export default function Header() {
               }
             }}
           >
-            LAERT COSTA STUDIO
+            <span className="font-display text-sm lg:text-base tracking-widest">
+              LAERT COSTA STUDIO
+            </span>
+            <span
+              className="font-body text-white/40 uppercase mt-1"
+              style={{ fontSize: '9px', letterSpacing: '0.22em' }}
+            >
+              ARQUITETURA INTEGRADA
+            </span>
           </Link>
 
           {/* Navegação desktop — gap-12 + Inter Tight 500 tracking-widest */}
@@ -73,7 +94,7 @@ export default function Header() {
 
           {/* Botão hamburger mobile */}
           <button
-            className="flex lg:hidden flex-col justify-center items-center w-10 h-10 gap-[6px]"
+            className="flex lg:hidden flex-col justify-center items-center w-11 h-11 gap-[6px]"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={menuOpen}

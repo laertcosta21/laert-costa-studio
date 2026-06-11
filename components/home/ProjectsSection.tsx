@@ -75,7 +75,10 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
         {/* Cabeçalho bipartido */}
         <AnimatedSection>
           <div className="mb-10 md:mb-14">
-            <span className="block font-body text-black/30 text-xs tracking-[0.2em] uppercase mb-6">
+            <span
+              className="block font-body uppercase mb-6"
+              style={{ fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(0,0,0,0.55)' }}
+            >
               — CASOS
             </span>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-12">

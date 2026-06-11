@@ -1,3 +1,6 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import CounterNumber from '@/components/ui/CounterNumber'
 
@@ -23,7 +26,88 @@ const CONTADORES = [
   { target: 2,   prefix: '',  suffix: '',  label: 'pós-graduações' },
 ]
 
+const TITLE_WORDS = ['TÉCNICA,', 'PRECISÃO', 'E', 'ENTREGA', 'SEM', 'INTERMEDIÁRIOS.']
+
 export default function DiferenciaisSection() {
+  const titleContainerRef = useRef<HTMLHeadingElement>(null)
+  const titleWordsRef = useRef<(HTMLSpanElement | null)[]>([])
+  const linesContainerRef = useRef<HTMLDivElement>(null)
+  const linesRef = useRef<(HTMLDivElement | null)[]>([])
+  const countersContainerRef = useRef<HTMLDivElement>(null)
+  const countersRef = useRef<(HTMLDivElement | null)[]>([])
+
+  // ─── Reveal: título (word mask), linhas e contadores ──────────
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    let ctx: { revert?: () => void } = {}
+
+    const init = async () => {
+      const { gsap } = await import('gsap')
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger')
+      gsap.registerPlugin(ScrollTrigger)
+
+      ctx = gsap.context(() => {
+        // Título — word mask translateY 110% → 0
+        const words = titleWordsRef.current.filter((el): el is HTMLSpanElement => el !== null)
+        if (words.length) {
+          gsap.set(words, { yPercent: 110 })
+          gsap.to(words, {
+            yPercent: 0,
+            duration: 0.7,
+            ease: 'power4.out',
+            stagger: 0.06,
+            scrollTrigger: {
+              trigger: titleContainerRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          })
+        }
+
+        // Linhas dos diferenciais — desenham da esquerda pra direita
+        const lines = linesRef.current.filter((el): el is HTMLDivElement => el !== null)
+        if (lines.length) {
+          gsap.set(lines, { scaleX: 0 })
+          gsap.to(lines, {
+            scaleX: 1,
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.12,
+            scrollTrigger: {
+              trigger: linesContainerRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+            },
+          })
+        }
+
+        // Contadores — pop de escala
+        const counters = countersRef.current.filter((el): el is HTMLDivElement => el !== null)
+        if (counters.length) {
+          gsap.set(counters, { scale: 0.9 })
+          gsap.to(counters, {
+            scale: 1,
+            duration: 0.6,
+            ease: 'back.out(1.7)',
+            stagger: 0.08,
+            scrollTrigger: {
+              trigger: countersContainerRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            },
+          })
+        }
+      })
+    }
+
+    init()
+    return () => ctx.revert?.()
+  }, [])
+
+  // Índice global de palavras para o array de refs
+  let wordIndex = 0
+
   return (
     <section
       id="diferenciais"
@@ -38,34 +122,58 @@ export default function DiferenciaisSection() {
             style={{
               fontSize: '12px',
               letterSpacing: '0.18em',
-              color: 'rgba(0,0,0,0.40)',
+              color: 'rgba(0,0,0,0.55)',
               marginBottom: '24px',
             }}
           >
-            + POR QUE ESCOLHER O STUDIO
+            — POR QUE ESCOLHER O STUDIO
           </p>
         </AnimatedSection>
 
-        {/* Título principal */}
-        <AnimatedSection delay={60}>
-          <h2
-            className="font-display text-black leading-tight"
-            style={{
-              fontSize: 'clamp(36px, 5vw, 88px)',
-              maxWidth: '700px',
-              marginBottom: '64px',
-              lineHeight: 1.0,
-            }}
-          >
-            TÉCNICA, PRECISÃO E ENTREGA SEM INTERMEDIÁRIOS.
-          </h2>
-        </AnimatedSection>
+        {/* Título principal — word mask reveal */}
+        <h2
+          ref={titleContainerRef}
+          className="font-display text-black leading-tight"
+          style={{
+            fontSize: 'clamp(36px, 5vw, 88px)',
+            maxWidth: '700px',
+            marginBottom: '64px',
+            lineHeight: 1.0,
+          }}
+        >
+          {TITLE_WORDS.map((word) => {
+            const idx = wordIndex++
+            return (
+              <span key={`${word}-${idx}`} className="inline-block overflow-hidden" style={{ marginRight: '0.28em' }}>
+                <span
+                  ref={(el) => { titleWordsRef.current[idx] = el }}
+                  className="inline-block"
+                >
+                  {word}
+                </span>
+              </span>
+            )
+          })}
+        </h2>
 
         {/* Três colunas de diferenciais */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div ref={linesContainerRef} className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {DIFERENCIAIS.map((item, index) => (
             <AnimatedSection key={item.title} delay={index * 80}>
-              <div style={{ borderTop: '2px solid #000', paddingTop: '32px' }}>
+              <div style={{ position: 'relative', paddingTop: '32px' }}>
+                <div
+                  ref={(el) => { linesRef.current[index] = el }}
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '2px',
+                    background: '#000',
+                    transformOrigin: 'left center',
+                  }}
+                />
                 <h3
                   className="font-body uppercase"
                   style={{
@@ -95,38 +203,41 @@ export default function DiferenciaisSection() {
         </div>
 
         {/* Contadores */}
-        <AnimatedSection delay={160}>
-          <div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-6"
-            style={{
-              borderTop: '1px solid rgba(0,0,0,0.20)',
-              paddingTop: '32px',
-              marginTop: '80px',
-            }}
-          >
-            {CONTADORES.map((counter) => (
-              <div key={counter.label}>
-                <CounterNumber
-                  target={counter.target}
-                  prefix={counter.prefix}
-                  suffix={counter.suffix}
-                  className="font-display text-black leading-none block [font-size:clamp(40px,5vw,72px)]"
-                />
-                <span
-                  className="font-body block mt-2"
-                  style={{
-                    fontSize: '13px',
-                    color: 'rgba(0,0,0,0.50)',
-                    letterSpacing: '0.12em',
-                    textTransform: 'lowercase',
-                  }}
-                >
-                  {counter.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </AnimatedSection>
+        <div
+          ref={countersContainerRef}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+          style={{
+            borderTop: '1px solid rgba(0,0,0,0.20)',
+            paddingTop: '32px',
+            marginTop: '80px',
+          }}
+        >
+          {CONTADORES.map((counter, index) => (
+            <div
+              key={counter.label}
+              ref={(el) => { countersRef.current[index] = el }}
+              style={{ transformOrigin: 'left center' }}
+            >
+              <CounterNumber
+                target={counter.target}
+                prefix={counter.prefix}
+                suffix={counter.suffix}
+                className="font-display text-black leading-none block [font-size:clamp(40px,5vw,72px)]"
+              />
+              <span
+                className="font-body block mt-2"
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(0,0,0,0.50)',
+                  letterSpacing: '0.12em',
+                  textTransform: 'lowercase',
+                }}
+              >
+                {counter.label}
+              </span>
+            </div>
+          ))}
+        </div>
 
       </div>
     </section>

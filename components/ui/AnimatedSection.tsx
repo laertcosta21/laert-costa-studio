@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 
 interface AnimatedSectionProps {
   children: ReactNode
@@ -14,6 +14,7 @@ interface AnimatedSectionProps {
    * Deslocamento vertical inicial em px (padrão 40).
    */
   y?: number
+  style?: CSSProperties
 }
 
 export default function AnimatedSection({
@@ -21,6 +22,7 @@ export default function AnimatedSection({
   className = '',
   delay = 0,
   y = 40,
+  style,
 }: AnimatedSectionProps) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -61,7 +63,7 @@ export default function AnimatedSection({
   }, [delay, y])
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={style}>
       {children}
     </div>
   )
