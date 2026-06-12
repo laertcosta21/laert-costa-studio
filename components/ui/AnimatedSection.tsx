@@ -50,7 +50,7 @@ export default function AnimatedSection({
             ease: 'power3.out',
             scrollTrigger: {
               trigger: el,
-              start: 'top 88%',
+              start: 'top bottom',
               toggleActions: 'play none none none',
             },
           }
