@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { Container } from '@/components/ui/Container'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5567993248550'
 
@@ -23,10 +24,7 @@ export default function Footer() {
       className="relative z-0"
       style={{ background: '#F5F5F4', borderTop: '1px solid rgba(0,0,0,0.08)' }}
     >
-      <div
-        className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
-        style={{ paddingTop: '64px', paddingBottom: '48px' }}
-      >
+      <Container style={{ paddingTop: '64px', paddingBottom: '48px' }}>
 
         {/* Grid principal */}
         <div className="grid grid-cols-12 gap-6 mb-16">
@@ -157,7 +155,7 @@ export default function Footer() {
           </span>
         </AnimatedSection>
 
-      </div>
+      </Container>
     </footer>
   )
 }

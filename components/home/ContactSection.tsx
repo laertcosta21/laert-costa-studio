@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Container } from '@/components/ui/Container'
 
 const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '5567993248550'
 
@@ -135,10 +136,7 @@ export default function ContactSection() {
       className="sticky top-0 z-20 will-change-transform"
       style={{ background: '#F5F5F4' }}
     >
-      <div
-        className="max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
-        style={{ paddingTop: '96px', paddingBottom: '128px' }}
-      >
+      <Container style={{ paddingTop: '96px', paddingBottom: '128px' }}>
 
         {/* Linha 1 — label + título massivo */}
         <div className="grid grid-cols-12 gap-6 mb-16 lg:mb-20">
@@ -159,8 +157,7 @@ export default function ContactSection() {
               <div key={word} style={{ overflow: 'hidden' }}>
                 <span
                   data-line
-                  className="font-display text-black leading-none block"
-                  style={{ fontSize: 'clamp(56px, 8vw, 130px)', display: 'block' }}
+                  className="font-display text-black leading-none tracking-[-0.01em] block text-[48px] md:text-[100px]"
                 >
                   {word}
                 </span>
@@ -190,7 +187,6 @@ export default function ContactSection() {
                   fontSize: '16px',
                   borderBottom: '1px solid rgba(0,0,0,0.2)',
                   paddingBottom: '4px',
-                  display: 'inline-block',
                   textDecoration: 'none',
                 }}
               >
@@ -206,7 +202,6 @@ export default function ContactSection() {
                   borderBottom: '1px solid rgba(0,0,0,0.2)',
                   paddingBottom: '4px',
                   marginTop: '12px',
-                  display: 'inline-block',
                   textDecoration: 'none',
                 }}
               >
@@ -343,7 +338,7 @@ export default function ContactSection() {
           </div>
 
         </div>
-      </div>
+      </Container>
     </section>
   )
 }

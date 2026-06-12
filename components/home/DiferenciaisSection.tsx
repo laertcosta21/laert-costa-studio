@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import CounterNumber from '@/components/ui/CounterNumber'
+import { Container } from '@/components/ui/Container'
 
 const DIFERENCIAIS = [
   {
@@ -113,7 +114,7 @@ export default function DiferenciaisSection() {
       id="diferenciais"
       className="bg-white border-t border-black/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)]"
     >
-      <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-12">
+      <Container>
 
         {/* Label / eyebrow */}
         <AnimatedSection>
@@ -133,12 +134,10 @@ export default function DiferenciaisSection() {
         {/* Título principal — word mask reveal */}
         <h2
           ref={titleContainerRef}
-          className="font-display text-black leading-tight"
+          className="font-display text-black leading-none tracking-[-0.01em] text-[32px] md:text-[64px]"
           style={{
-            fontSize: 'clamp(36px, 5vw, 88px)',
             maxWidth: '700px',
             marginBottom: '64px',
-            lineHeight: 1.0,
           }}
         >
           {TITLE_WORDS.map((word) => {
@@ -222,7 +221,7 @@ export default function DiferenciaisSection() {
                 target={counter.target}
                 prefix={counter.prefix}
                 suffix={counter.suffix}
-                className="font-display text-black leading-none block [font-size:clamp(40px,5vw,72px)]"
+                className="font-display text-black leading-none block text-[36px] md:text-[56px]"
               />
               <span
                 className="font-body block mt-2"
@@ -239,7 +238,7 @@ export default function DiferenciaisSection() {
           ))}
         </div>
 
-      </div>
+      </Container>
     </section>
   )
 }

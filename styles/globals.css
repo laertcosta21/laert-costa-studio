@@ -12,8 +12,8 @@
 :root {
   --color-black: #000000;
   --color-white: #ffffff;
-  --spacing-section: 120px;
-  --spacing-section-mobile: 64px;
+  --spacing-section: 88px;
+  --spacing-section-mobile: 54px;
   --max-width: 1440px;
   --grid-gutter: 24px;
 
@@ -27,12 +27,14 @@
 /* ============================================
    RESET
    ============================================ */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 html {

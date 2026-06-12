@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { Container } from '@/components/ui/Container'
 
 const NAV_LINKS = [
   { href: '/#servicos', label: 'SERVIÇOS' },
@@ -59,11 +60,11 @@ export default function Header() {
             : 'bg-transparent border-b border-transparent'
         }`}
       >
-        <div className="max-w-[1440px] mx-auto w-full px-6 lg:px-12 flex items-center justify-between h-full">
+        <Container className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link
             href="/#hero"
-            className="flex flex-col justify-center leading-none text-white hover:opacity-70 transition-opacity"
+            className="flex flex-col items-start justify-center leading-tight text-white hover:opacity-70 transition-opacity"
             onClick={(e) => {
               handleNavClick()
               if (typeof window !== 'undefined' && window.location.pathname === '/') {
@@ -72,13 +73,10 @@ export default function Header() {
               }
             }}
           >
-            <span className="font-display text-sm lg:text-base tracking-widest">
+            <span className="font-display text-[13px] tracking-[0.15em] leading-none whitespace-nowrap">
               LAERT COSTA STUDIO
             </span>
-            <span
-              className="font-body text-white/40 uppercase mt-1"
-              style={{ fontSize: '9px', letterSpacing: '0.22em' }}
-            >
+            <span className="font-body text-white/40 text-[9px] tracking-[0.2em] uppercase leading-none mt-[3px] whitespace-nowrap">
               ARQUITETURA INTEGRADA
             </span>
           </Link>
@@ -94,7 +92,7 @@ export default function Header() {
 
           {/* Botão hamburger mobile */}
           <button
-            className="flex lg:hidden flex-col justify-center items-center w-11 h-11 gap-[6px]"
+            className="flex lg:hidden flex-col justify-center items-center w-11 h-11 gap-[6px] flex-shrink-0"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={menuOpen}
@@ -103,7 +101,7 @@ export default function Header() {
             <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
             <span className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
           </button>
-        </div>
+        </Container>
       </header>
 
       {/* Menu fullscreen mobile */}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { Container } from '@/components/ui/Container'
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -102,8 +103,8 @@ export default function AboutSection() {
         </span>
       </div>
 
-      <div
-        className="relative max-w-[1440px] mx-auto px-6 md:px-10 lg:px-16 2xl:px-24"
+      <Container
+        className="relative"
         style={{ paddingTop: '96px', paddingBottom: '128px', zIndex: 1 }}
       >
 
@@ -123,8 +124,7 @@ export default function AboutSection() {
           {/* Título massivo */}
           <div className="col-span-10 lg:col-span-5" data-reveal>
             <h2
-              className="font-display text-black leading-none"
-              style={{ fontSize: 'clamp(64px, 8vw, 120px)' }}
+              className="font-display text-black leading-none tracking-[-0.01em] text-[56px] md:text-[100px]"
             >
               Sobre.
             </h2>
@@ -191,7 +191,7 @@ export default function AboutSection() {
           </div>
         </div>
 
-      </div>
+      </Container>
     </section>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { Container } from '@/components/ui/Container'
 import ProjectCard from '@/components/projects/ProjectCard'
 import ProjectFilters from '@/components/projects/ProjectFilters'
 import type { Database, ProjectCategory } from '@/lib/supabase/types'
@@ -70,7 +71,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
       id="projetos"
       className="bg-white border-t border-black/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)]"
     >
-      <div className="max-w-[1440px] mx-auto w-full px-6 md:px-10 lg:px-12 2xl:px-24">
+      <Container>
 
         {/* Cabeçalho bipartido */}
         <AnimatedSection>
@@ -83,8 +84,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
             </span>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 md:gap-12">
               <h2
-                className="font-display text-black leading-none flex-shrink-0"
-                style={{ fontSize: 'clamp(64px, 10vw, 140px)' }}
+                className="font-display text-black leading-none tracking-[-0.01em] flex-shrink-0 text-[56px] md:text-[108px]"
               >
                 Projetos.
               </h2>
@@ -128,7 +128,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           )}
         </div>
 
-      </div>
+      </Container>
     </section>
   )
 }

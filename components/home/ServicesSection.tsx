@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { Container } from '@/components/ui/Container'
 
 interface ServiceItem {
   number: string
@@ -329,9 +330,8 @@ export default function ServicesSection() {
       id="servicos"
       className="bg-black border-t border-white/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)] overflow-hidden"
     >
-      <div
+      <Container
         ref={wrapperRef}
-        className="max-w-[1440px] mx-auto w-full px-6 lg:px-12"
         style={{ willChange: 'transform, clip-path', transformOrigin: 'center center' }}
       >
 
@@ -340,8 +340,7 @@ export default function ServicesSection() {
           <div className="flex flex-col gap-4 md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8 mb-16">
             {/* Esquerda — título */}
             <h2
-              className="services-title font-display text-white leading-none"
-              style={{ fontSize: 'clamp(40px, 6vw, 100px)' }}
+              className="services-title font-display text-white leading-none tracking-[-0.01em] text-[40px] md:text-[88px]"
             >
               SERVIÇOS.
             </h2>
@@ -383,7 +382,7 @@ export default function ServicesSection() {
           ))}
         </div>
 
-      </div>
+      </Container>
     </section>
   )
 }

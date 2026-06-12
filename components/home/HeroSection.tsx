@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { Container } from '@/components/ui/Container'
 
 const HEADLINE_LINES = [
   ['PROJETOS', 'QUE'],
@@ -189,60 +190,59 @@ export default function HeroSection() {
       </div>
 
       {/* ─── Conteúdo — ancorado no fundo-esquerdo ───────────────── */}
-      <div className="relative z-10 flex flex-col justify-end flex-1 px-6 lg:px-12 pb-16 lg:pb-20">
+      <div className="relative z-10 flex flex-col justify-center flex-1 pt-16 md:pt-20">
+        <Container>
 
-        {/* Headline — word mask */}
-        <div
-          className="mb-6 md:mb-8"
-          aria-label={HEADLINE_LINES.map((l) => l.join(' ')).join(' ')}
-        >
-          {HEADLINE_LINES.map((lineWords, lineIndex) => (
-            <div
-              key={lineIndex}
-              className="flex leading-none"
-              style={{ gap: '0.28em' }}
-            >
-              {lineWords.map((word) => {
-                const idx = wordIndex++
-                return (
-                  <div key={`${word}-${idx}`} className="overflow-hidden">
-                    <span
-                      ref={(el) => { wordsRef.current[idx] = el }}
-                      aria-hidden="true"
-                      className="block font-display text-white"
-                      style={{ fontSize: 'clamp(48px, 8vw, 140px)', lineHeight: 0.92 }}
-                    >
-                      {word}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          ))}
-        </div>
+          {/* Headline — word mask */}
+          <div
+            className="mb-6 md:mb-8"
+            aria-label={HEADLINE_LINES.map((l) => l.join(' ')).join(' ')}
+          >
+            {HEADLINE_LINES.map((lineWords, lineIndex) => (
+              <div
+                key={lineIndex}
+                className="flex flex-wrap text-[48px] sm:text-[64px] md:text-[100px] leading-none tracking-[-0.01em]"
+                style={{ gap: '0.28em' }}
+              >
+                {lineWords.map((word) => {
+                  const idx = wordIndex++
+                  return (
+                    <div key={`${word}-${idx}`} className="overflow-hidden">
+                      <span
+                        ref={(el) => { wordsRef.current[idx] = el }}
+                        aria-hidden="true"
+                        className="block font-display text-white"
+                      >
+                        {word}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
 
-        {/* Subheadline */}
-        <p
-          ref={subtitleRef}
-          className="font-body text-white/75 leading-relaxed text-base lg:text-lg"
-          style={{ maxWidth: '480px' }}
-        >
-          {SUBHEADLINE}
-        </p>
+          {/* Subheadline */}
+          <p
+            ref={subtitleRef}
+            className="font-body text-white/75 leading-relaxed text-base lg:text-lg max-w-lg"
+          >
+            {SUBHEADLINE}
+          </p>
+        </Container>
       </div>
 
       {/* ─── Rodapé: SCROLL ────────────────────────────────────────── */}
-      <div
-        ref={scrollRef}
-        className="relative z-10 flex items-center justify-between px-6 lg:px-12 py-5 border-t border-white/[0.12]"
-      >
-        {/* Scroll indicator */}
-        <div className="flex items-center gap-3" aria-hidden="true">
-          <div className="scroll-indicator-line" />
-          <span className="font-body text-white/40 text-xs tracking-[0.2em] uppercase">
-            SCROLL
-          </span>
-        </div>
+      <div ref={scrollRef} className="relative z-10 border-t border-white/[0.12]">
+        <Container className="flex items-center justify-between py-5">
+          {/* Scroll indicator */}
+          <div className="flex items-center gap-3" aria-hidden="true">
+            <div className="scroll-indicator-line" />
+            <span className="font-body text-white/40 text-xs tracking-[0.2em] uppercase">
+              SCROLL
+            </span>
+          </div>
+        </Container>
       </div>
     </section>
   )

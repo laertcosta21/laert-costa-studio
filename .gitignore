@@ -45,6 +45,10 @@ next-env.d.ts
 
 # Arquivos de referência de design (não fazem parte do código)
 /referencia site/
+/Referencia/
+
+# Screenshots de teste de responsividade
+/screenshots/
 
 # Claude agents (configurações locais)
 /.claude/
