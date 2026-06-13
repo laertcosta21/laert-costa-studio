@@ -74,7 +74,7 @@ export default function Header() {
             }}
           >
             <span className="font-display text-[13px] tracking-[0.15em] leading-none whitespace-nowrap">
-              LAERT COSTA STUDIO
+              STUDIO LAERT COSTA
             </span>
             <span className="font-body text-white/40 text-[9px] tracking-[0.2em] uppercase leading-none mt-[3px] whitespace-nowrap">
               ARQUITETURA INTEGRADA
