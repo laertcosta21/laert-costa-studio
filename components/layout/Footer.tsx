@@ -136,7 +136,7 @@ export default function Footer() {
           <div className="flex flex-col leading-none">
             <span
               className="font-display text-black"
-              style={{ fontSize: '18px', letterSpacing: '0.05em' }}
+              style={{ fontSize: '18px', letterSpacing: '0.12em' }}
             >
               STUDIO LAERT COSTA
             </span>
