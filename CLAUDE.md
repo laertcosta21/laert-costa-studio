@@ -35,7 +35,7 @@ Siga todas as instrucoes abaixo sem excecao em toda sessao de trabalho.
 ## Identidade Visual — Regras Absolutas
 
 - Paleta: **somente preto (#000000) e branco (#FFFFFF)**. Nenhuma outra cor.
-- Tipografia: **sem serifa, bold, geometrica**. Fontes aprovadas: Bebas Neue (headlines), Inter Tight (corpo). Nenhuma fonte serifada.
+- Tipografia: **sem serifa, bold, geometrica**. Fontes aprovadas: Bebas Neue (headlines), Inter Tight (corpo), Space Mono (labels editoriais, numeracao de paginas, elementos tipo "p. 001"). Nenhuma fonte serifada.
 - Estilo: brutalismo refinado. Espaco negativo generoso. Tipografia massiva. Zero ornamentacao desnecessaria.
 - Cursor: customizado em toda a pagina publica.
 - **Nunca usar:** gradientes coloridos, sombras coloridas, bordas arredondadas excessivas, icones decorativos sem funcao.

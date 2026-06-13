@@ -138,6 +138,12 @@ export default function ContactSection() {
     >
       <Container style={{ paddingTop: '96px', paddingBottom: '128px' }}>
 
+        {/* Numeração editorial */}
+        <div className="flex items-center justify-between mb-10" data-reveal>
+          <span className="editorial-label text-black/40">/ 06 — CONTATO</span>
+          <span className="editorial-label text-black/40">P. 006 / 06</span>
+        </div>
+
         {/* Linha 1 — label + título massivo */}
         <div className="grid grid-cols-12 gap-6 mb-16 lg:mb-20">
 

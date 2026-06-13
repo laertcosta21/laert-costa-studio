@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { Space_Mono } from 'next/font/google'
 import Header from '@/components/layout/Header'
 import ClientComponents from '@/components/layout/ClientComponents'
 import PageTransition from '@/components/layout/PageTransition'
@@ -30,6 +31,14 @@ const interTight = localFont({
   display: 'swap',
 })
 
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal'],
+  variable: '--font-space-mono',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
   title: 'Laert Costa Studio — Arquitetura e Visualização 3D',
   description:
@@ -50,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${bebasNeue.variable} ${interTight.variable}`}
+      className={`${bebasNeue.variable} ${interTight.variable} ${spaceMono.variable}`}
     >
       <body>
         <ClientComponents />

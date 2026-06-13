@@ -17,6 +17,9 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [activeFilter, setActiveFilter] = useState<'all' | ProjectCategory>('all')
   const [animating, setAnimating] = useState(false)
   const cardsRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const titlesRef = useRef<(HTMLDivElement | null)[]>([])
 
   const filtered =
     activeFilter === 'all'
@@ -66,12 +69,73 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
     run()
   }, [activeFilter, animating])
 
+  // ─── Scroll horizontal pinado (desktop) + texto "surgindo" ─────
+  useEffect(() => {
+    const wrapper = wrapperRef.current
+    const track = trackRef.current
+    if (!wrapper || !track) return
+    if (animating) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!window.matchMedia('(min-width: 768px)').matches) return
+
+    let ctx: { revert?: () => void } = {}
+
+    const init = async () => {
+      const { gsap } = await import('gsap')
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger')
+      gsap.registerPlugin(ScrollTrigger)
+
+      ctx = gsap.context(() => {
+        wrapper.style.overflow = 'hidden'
+
+        const getDistance = () => Math.max(track.scrollWidth - wrapper.offsetWidth, 0)
+
+        const titles = titlesRef.current.filter((t): t is HTMLDivElement => t !== null)
+        gsap.set(titles, { opacity: 0, y: 24 })
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: wrapper,
+            start: 'top top',
+            end: () => `+=${getDistance()}`,
+            scrub: true,
+            pin: true,
+            invalidateOnRefresh: true,
+          },
+        })
+
+        tl.to(track, { x: () => -getDistance(), ease: 'none' }, 0)
+
+        titles.forEach((title, i) => {
+          const at = Math.min(i * (0.85 / Math.max(titles.length, 1)), 0.88)
+          tl.to(title, { opacity: 1, y: 0, ease: 'none', duration: 0.12 }, at)
+        })
+      })
+
+      ScrollTrigger.refresh()
+    }
+
+    init()
+    return () => {
+      wrapper.style.overflow = ''
+      ctx.revert?.()
+    }
+  }, [filtered, animating])
+
   return (
     <section
       id="projetos"
       className="bg-white border-t border-black/10 py-[var(--spacing-section-mobile)] md:py-[var(--spacing-section)]"
     >
       <Container>
+
+        {/* Numeração editorial */}
+        <AnimatedSection>
+          <div className="flex items-center justify-between mb-6">
+            <span className="editorial-label text-black/40">/ 04 — PROJETOS</span>
+            <span className="editorial-label text-black/40">P. 004 / 06</span>
+          </div>
+        </AnimatedSection>
 
         {/* Cabeçalho bipartido */}
         <AnimatedSection>
@@ -98,7 +162,7 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
           </div>
         </AnimatedSection>
 
-        {/* Filtros — cores para fundo branco */}
+        {/* Filtros */}
         <AnimatedSection delay={100}>
           <div className="mb-10 md:mb-14 border-t border-black/10 pt-8 overflow-x-auto pb-2 md:pb-0 md:overflow-visible">
             <div className="flex-nowrap md:flex-wrap min-w-max md:min-w-0">
@@ -106,29 +170,42 @@ export default function ProjectsSection({ projects }: ProjectsSectionProps) {
             </div>
           </div>
         </AnimatedSection>
+      </Container>
 
-        {/* Grid de cards — altura uniforme, sem offset */}
+      {/* ─── Track horizontal — pinado no desktop, swipe no mobile ── */}
+      <div ref={wrapperRef} className="relative w-full projects-horizontal-wrapper">
         <div
-          ref={cardsRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch"
+          ref={(el) => { cardsRef.current = el; trackRef.current = el }}
+          className="projects-horizontal-track flex gap-6 md:gap-10 px-5 md:px-9"
         >
           {filtered.length > 0 ? (
-            filtered.map((project) => (
+            filtered.map((project, index) => (
               <div
                 key={project.id}
-                className="project-card-wrapper"
+                className="project-card-wrapper projects-horizontal-card"
               >
                 <ProjectCard project={project} />
+                <div
+                  ref={(el) => { titlesRef.current[index] = el }}
+                  className="projects-horizontal-title mt-4"
+                >
+                  <span className="editorial-label text-black/40 block mb-1">
+                    {String(index + 1).padStart(2, '0')} / {String(filtered.length).padStart(2, '0')}
+                  </span>
+                  <h3 className="font-display text-black leading-none text-2xl md:text-4xl tracking-[-0.01em]">
+                    {project.title}
+                  </h3>
+                </div>
               </div>
             ))
           ) : (
-            <p className="col-span-full font-body text-black/20 text-center py-24 tracking-widest uppercase text-xs">
+            <p className="font-body text-black/20 text-center py-24 tracking-widest uppercase text-xs w-full">
               Projetos em breve.
             </p>
           )}
         </div>
+      </div>
 
-      </Container>
     </section>
   )
 }

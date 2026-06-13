@@ -116,6 +116,14 @@ export default function DiferenciaisSection() {
     >
       <Container>
 
+        {/* Numeração editorial */}
+        <AnimatedSection>
+          <div className="flex items-center justify-between mb-6">
+            <span className="editorial-label text-black/40">/ 03 — DIFERENCIAIS</span>
+            <span className="editorial-label text-black/40">P. 003 / 06</span>
+          </div>
+        </AnimatedSection>
+
         {/* Label / eyebrow */}
         <AnimatedSection>
           <p

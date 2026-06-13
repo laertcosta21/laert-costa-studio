@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import GrainOverlay from '@/components/ui/GrainOverlay'
 
 const ScrollProgress = dynamic(
   () => import('@/components/layout/ScrollProgress'),
@@ -18,6 +19,7 @@ export default function ClientComponents() {
   return (
     <>
       <SmoothScrollProvider>{null}</SmoothScrollProvider>
+      <GrainOverlay />
       <ScrollProgress />
       <a
         href={`https://wa.me/${WHATSAPP_NUMBER}`}

@@ -3,33 +3,40 @@
 import { useEffect, useRef } from 'react'
 import { Container } from '@/components/ui/Container'
 
-const HEADLINE_LINES = [
-  ['PROJETOS', 'QUE'],
-  ['VENDEM', 'ANTES'],
-  ['DE', 'SEREM', 'CONSTRUÍDOS.'],
+const LOGO_LINES = [
+  { words: ['STUDIO'], size: 'clamp(40px, 9vw, 160px)' },
+  { words: ['LAERT', 'COSTA'], size: 'clamp(64px, 16vw, 280px)' },
 ]
+
+const TAGLINE = 'PROJETOS QUE VENDEM ANTES DE SEREM CONSTRUÍDOS.'
 
 const SUBHEADLINE =
   'Arquitetura, BIM e visualização 3D para escritórios e incorporadoras que precisam apresentar projetos com o nível de qualidade que os clientes exigem.'
 
 export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([])
+  const taglineRef = useRef<HTMLParagraphElement>(null)
   const subtitleRef = useRef<HTMLParagraphElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const sectionRef = useRef<HTMLElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const topBarRef = useRef<HTMLDivElement>(null)
 
-  // ─── Animação de entrada (word mask + subtitle) ───────────────
+  // ─── Animação de entrada (word mask + textos + barras) ────────
   useEffect(() => {
+    const tagline = taglineRef.current
     const subtitle = subtitleRef.current
     const scroll = scrollRef.current
+    const topBar = topBarRef.current
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (tagline) tagline.style.opacity = '1'
       if (subtitle) subtitle.style.opacity = '1'
       if (scroll) {
         scroll.style.opacity = '1'
         scroll.style.transform = 'translateY(0)'
       }
+      if (topBar) topBar.style.opacity = '1'
       return
     }
 
@@ -44,18 +51,28 @@ export default function HeroSection() {
         if (cancelled) return
 
         words.forEach((w) => { w.style.transform = 'translateY(110%)' })
+        if (tagline) tagline.style.opacity = '0'
         if (subtitle) subtitle.style.opacity = '0'
         if (scroll) {
           scroll.style.opacity = '0'
           scroll.style.transform = 'translateY(8px)'
         }
+        if (topBar) topBar.style.opacity = '0'
 
         createTimeline({ defaults: { ease: 'outExpo' } })
+          .add(topBar ? [topBar] : [], {
+            opacity: [0, 1],
+            duration: 500,
+          }, 0)
           .add(words, {
             translateY: ['110%', '0%'],
-            duration: 600,
-            delay: stagger(80),
-          }, 400)
+            duration: 700,
+            delay: stagger(90),
+          }, 200)
+          .add(tagline ? [tagline] : [], {
+            opacity: [0, 1],
+            duration: 400,
+          }, '-=300')
           .add(subtitle ? [subtitle] : [], {
             opacity: [0, 1],
             duration: 400,
@@ -67,11 +84,13 @@ export default function HeroSection() {
           }, '-=200')
       } catch {
         words.forEach((w) => { w.style.transform = 'translateY(0)' })
+        if (tagline) tagline.style.opacity = '1'
         if (subtitle) subtitle.style.opacity = '1'
         if (scroll) {
           scroll.style.opacity = '1'
           scroll.style.transform = 'translateY(0)'
         }
+        if (topBar) topBar.style.opacity = '1'
       }
     }
 
@@ -79,8 +98,11 @@ export default function HeroSection() {
     return () => { cancelled = true }
   }, [])
 
-  // ─── Parallax de scroll no vídeo de fundo ─────────────────────
+  // ─── Transição de saída: texto cresce e dá fade out ao rolar ──
   useEffect(() => {
+    const section = sectionRef.current
+    const content = contentRef.current
+    if (!section || !content) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     let ctx: { revert?: () => void } = {}
@@ -90,71 +112,28 @@ export default function HeroSection() {
       const { ScrollTrigger } = await import('gsap/ScrollTrigger')
       gsap.registerPlugin(ScrollTrigger)
 
-      const video = videoRef.current
-      if (!video) return
-
       ctx = gsap.context(() => {
-        gsap.to(video, {
-          yPercent: 15,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top top',
-            end: 'bottom top',
-            scrub: true,
-          },
-        })
+        gsap.fromTo(
+          content,
+          { scale: 1, opacity: 1 },
+          {
+            scale: 1.18,
+            opacity: 0,
+            ease: 'none',
+            transformOrigin: 'left center',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: true,
+            },
+          }
+        )
       })
     }
 
     init()
     return () => ctx.revert?.()
-  }, [])
-
-  // ─── Interação do vídeo com o cursor (parallax + zoom) ────────
-  useEffect(() => {
-    const section = sectionRef.current
-    const video = videoRef.current
-    if (!section || !video) return
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const target = { x: 0, y: 0 }
-    const current = { x: 0, y: 0 }
-    let raf: number
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect()
-      target.x = (e.clientX - rect.left) / rect.width - 0.5
-      target.y = (e.clientY - rect.top) / rect.height - 0.5
-    }
-
-    const handleMouseLeave = () => {
-      target.x = 0
-      target.y = 0
-    }
-
-    const tick = () => {
-      current.x += (target.x - current.x) * 0.06
-      current.y += (target.y - current.y) * 0.06
-
-      const translateX = current.x * -40
-      const translateY = current.y * -40
-
-      video.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(1.08)`
-
-      raf = requestAnimationFrame(tick)
-    }
-
-    section.addEventListener('mousemove', handleMouseMove)
-    section.addEventListener('mouseleave', handleMouseLeave)
-    raf = requestAnimationFrame(tick)
-
-    return () => {
-      section.removeEventListener('mousemove', handleMouseMove)
-      section.removeEventListener('mouseleave', handleMouseLeave)
-      cancelAnimationFrame(raf)
-    }
   }, [])
 
   // Índice global de palavras para o array de refs
@@ -166,52 +145,42 @@ export default function HeroSection() {
       id="hero"
       className="relative flex flex-col justify-between min-h-[100dvh] overflow-hidden bg-black"
     >
-      {/* ─── Vídeo de fundo ─────────────────────────────────────── */}
-      <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          src="/images/video.mp4"
-          poster="/images/01.jpeg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          style={{ willChange: 'transform', transform: 'scale(1.08)' }}
-        />
-
-        {/* Overlay escuro sobre o vídeo */}
-        <div
-          className="absolute inset-0"
-          style={{ background: 'rgba(0,0,0,0.52)', zIndex: 2 }}
-          aria-hidden="true"
-        />
+      {/* ─── Cabeçalho editorial: labels de canto ────────────────── */}
+      <div ref={topBarRef} className="relative z-10 border-b border-white/[0.12] mt-16 md:mt-20">
+        <Container className="flex items-center justify-between py-5">
+          <span className="editorial-label text-white/40">
+            ARQUITETURA — BIM — 3D
+          </span>
+          <span className="editorial-label text-white/40">
+            CAMPO GRANDE, MS
+          </span>
+        </Container>
       </div>
 
-      {/* ─── Conteúdo — ancorado no fundo-esquerdo ───────────────── */}
-      <div className="relative z-10 flex flex-col justify-center flex-1 pt-16 md:pt-20">
+      {/* ─── Conteúdo central — logo gigante ─────────────────────── */}
+      <div ref={contentRef} className="relative z-10 flex flex-col justify-center flex-1 py-16 md:py-20">
         <Container>
 
-          {/* Headline — word mask */}
+          {/* Logo gigante — word mask */}
           <div
-            className="mb-6 md:mb-8"
-            aria-label={HEADLINE_LINES.map((l) => l.join(' ')).join(' ')}
+            className="mb-8 md:mb-10"
+            aria-label="Laert Costa Studio"
           >
-            {HEADLINE_LINES.map((lineWords, lineIndex) => (
+            {LOGO_LINES.map((line, lineIndex) => (
               <div
                 key={lineIndex}
-                className="flex flex-wrap text-[48px] sm:text-[64px] md:text-[100px] leading-none tracking-[-0.01em]"
+                className="flex flex-wrap"
                 style={{ gap: '0.28em' }}
               >
-                {lineWords.map((word) => {
+                {line.words.map((word) => {
                   const idx = wordIndex++
                   return (
                     <div key={`${word}-${idx}`} className="overflow-hidden">
                       <span
                         ref={(el) => { wordsRef.current[idx] = el }}
                         aria-hidden="true"
-                        className="block font-display text-white"
+                        className="block font-display text-white leading-[0.92] tracking-[-0.02em]"
+                        style={{ fontSize: line.size }}
                       >
                         {word}
                       </span>
@@ -222,26 +191,40 @@ export default function HeroSection() {
             ))}
           </div>
 
+          {/* Tagline — substitui a antiga headline */}
+          <p
+            ref={taglineRef}
+            className="editorial-label text-white/70 mb-3"
+            style={{ fontSize: '13px', letterSpacing: '0.16em' }}
+          >
+            / {TAGLINE}
+          </p>
+
           {/* Subheadline */}
           <p
             ref={subtitleRef}
-            className="font-body text-white/75 leading-relaxed text-base lg:text-lg max-w-lg"
+            className="font-body text-white/55 leading-relaxed text-base lg:text-lg max-w-lg"
           >
             {SUBHEADLINE}
           </p>
         </Container>
       </div>
 
-      {/* ─── Rodapé: SCROLL ────────────────────────────────────────── */}
+      {/* ─── Rodapé editorial: scroll + numeração ─────────────────── */}
       <div ref={scrollRef} className="relative z-10 border-t border-white/[0.12]">
         <Container className="flex items-center justify-between py-5">
           {/* Scroll indicator */}
           <div className="flex items-center gap-3" aria-hidden="true">
             <div className="scroll-indicator-line" />
-            <span className="font-body text-white/40 text-xs tracking-[0.2em] uppercase">
+            <span className="editorial-label text-white/40">
               SCROLL
             </span>
           </div>
+
+          {/* Numeração editorial */}
+          <span className="editorial-label text-white/40">
+            P. 001 / 06
+          </span>
         </Container>
       </div>
     </section>

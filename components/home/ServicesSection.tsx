@@ -335,6 +335,14 @@ export default function ServicesSection() {
         style={{ willChange: 'transform, clip-path', transformOrigin: 'center center' }}
       >
 
+        {/* Numeração editorial */}
+        <AnimatedSection>
+          <div className="flex items-center justify-between mb-10">
+            <span className="editorial-label text-white/40">/ 02 — SERVIÇOS</span>
+            <span className="editorial-label text-white/40">P. 002 / 06</span>
+          </div>
+        </AnimatedSection>
+
         {/* Cabeçalho — grid 2 colunas: título esquerda, descrição direita */}
         <AnimatedSection>
           <div className="flex flex-col gap-4 md:grid md:grid-cols-[1fr_auto] md:items-end md:gap-8 mb-16">

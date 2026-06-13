@@ -3,9 +3,14 @@
 import { useEffect, useRef } from 'react'
 import { Container } from '@/components/ui/Container'
 
+const LIT_TEXT =
+  'Mais de 10 anos dedicados a projetos que precisam funcionar antes de serem bonitos.'
+
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const watermarkRef = useRef<HTMLDivElement>(null)
+  const litTextRef = useRef<HTMLParagraphElement>(null)
+  const litWordsRef = useRef<(HTMLSpanElement | null)[]>([])
 
   useEffect(() => {
     const el = sectionRef.current
@@ -52,6 +57,23 @@ export default function AboutSection() {
               },
             }
           )
+        }
+
+        // Texto que se ilumina ao rolar — palavras cinza → preto sólido
+        const litWords = litWordsRef.current.filter((w): w is HTMLSpanElement => w !== null)
+        if (litWords.length && litTextRef.current) {
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: litTextRef.current,
+              start: 'top 80%',
+              end: 'bottom 40%',
+              scrub: true,
+            },
+          }).to(litWords, {
+            color: 'rgba(0, 0, 0, 1)',
+            stagger: 0.05,
+            ease: 'none',
+          })
         }
 
         // Animação de entrada dos textos
@@ -108,6 +130,12 @@ export default function AboutSection() {
         style={{ paddingTop: '96px', paddingBottom: '128px', zIndex: 1 }}
       >
 
+        {/* Numeração editorial */}
+        <div className="flex items-center justify-between mb-10" data-reveal>
+          <span className="editorial-label text-black/40">/ 05 — SOBRE</span>
+          <span className="editorial-label text-black/40">P. 005 / 06</span>
+        </div>
+
         {/* Linha 1 — label + título */}
         <div className="grid grid-cols-12 gap-6">
 
@@ -143,10 +171,20 @@ export default function AboutSection() {
           {/* Texto principal — 5 colunas */}
           <div className="col-span-12 md:col-span-5" data-reveal>
             <p
-              className="font-body text-black leading-snug mb-4"
+              ref={litTextRef}
+              className="font-body leading-snug mb-4"
               style={{ fontSize: 'clamp(18px, 1.6vw, 22px)', fontWeight: 600 }}
             >
-              Mais de 10 anos dedicados a projetos que precisam funcionar antes de serem bonitos.
+              {LIT_TEXT.split(' ').map((word, idx) => (
+                <span
+                  key={`${word}-${idx}`}
+                  ref={(el) => { litWordsRef.current[idx] = el }}
+                  className="lit-word"
+                  style={{ marginRight: '0.28em', display: 'inline-block' }}
+                >
+                  {word}
+                </span>
+              ))}
             </p>
             <p
               className="font-body text-black/60 leading-relaxed"

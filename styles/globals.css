@@ -4,6 +4,7 @@
 @theme inline {
   --font-display: var(--font-bebas), sans-serif;
   --font-body: var(--font-inter-tight), sans-serif;
+  --font-mono: var(--font-space-mono), monospace;
 }
 
 /* ============================================
@@ -383,6 +384,69 @@ body {
 }
 
 /* ============================================
+   EDITORIAL LABEL — numeração de página, labels de canto
+   ============================================ */
+.editorial-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   GRAIN OVERLAY — textura sutil sobre o site inteiro
+   ============================================ */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ============================================
+   SCROLL-LIT TEXT — palavras cinza claro → preto sólido
+   ============================================ */
+.lit-word {
+  color: rgba(0, 0, 0, 0.15);
+  will-change: color;
+}
+
+/* ============================================
+   PROJECTS HORIZONTAL SCROLL
+   ============================================ */
+.projects-horizontal-track {
+  will-change: transform;
+}
+
+.projects-horizontal-card {
+  flex-shrink: 0;
+  width: 82vw;
+  max-width: 420px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .projects-horizontal-card {
+    width: 38vw;
+    max-width: 560px;
+  }
+}
+
+.projects-horizontal-wrapper {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.projects-horizontal-title {
+  opacity: 1;
+}
+
+/* ============================================
    ACESSIBILIDADE
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
@@ -391,5 +455,9 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .lit-word {
+    color: rgba(0, 0, 0, 0.85) !important;
   }
 }
